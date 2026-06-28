@@ -1,4 +1,4 @@
-import { cacheDirectory, createDownloadResumable } from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { Platform } from 'react-native';
 
@@ -22,16 +22,14 @@ export async function checkForUpdate(currentVersion: string): Promise<UpdateInfo
 }
 
 export async function downloadAndInstall(apkUrl: string): Promise<void> {
-  const fileUri = cacheDirectory + 'update.apk';
-  const download = createDownloadResumable(apkUrl, fileUri);
-  const result = await download.downloadAsync();
-  if (!result) throw new Error('Download failed');
+  const destination = new File(Paths.cache, 'update.apk');
+  const file = await File.downloadFileAsync(apkUrl, destination);
 
   if (Platform.OS === 'android') {
     await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
-      data: result.uri,
+      data: file.contentUri,
       type: 'application/vnd.android.package-archive',
-      flags: 1,
+      flags: 268435457,
     });
   }
 }
