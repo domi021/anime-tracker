@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useColors } from '@/src/hooks/useColors';
-import { checkForUpdate, UpdateInfo } from '@/src/lib/update';
+import { checkForUpdate, getUpdateUrl, UpdateInfo } from '@/src/lib/update';
 import Constants from 'expo-constants';
 
 export default function ForceUpdate() {
@@ -16,12 +16,11 @@ export default function ForceUpdate() {
   }, []);
 
   const handleUpdate = () => {
-    if (!update) return;
-    Linking.openURL(update.apkUrl);
+    Linking.openURL(getUpdateUrl());
   };
 
   return (
-    <Modal visible={!!update} transparent animationType="fade" onRequestClose={() => {}}>
+    <Modal visible={!!update} transparent animationType="fade" onRequestClose={() => setUpdate(null)}>
       <View style={[styles.overlay, { backgroundColor: colors.background }]}>
         <Text style={[styles.icon, { color: colors.tint }]}>{'\u039B'}</Text>
         <Text style={[styles.title, { color: colors.text }]}>Update Available</Text>
@@ -33,6 +32,9 @@ export default function ForceUpdate() {
           style={[styles.btn, { backgroundColor: colors.tint }]}
         >
           <Text style={styles.btnText}>Download</Text>
+        </Pressable>
+        <Pressable onPress={() => setUpdate(null)} style={{ marginTop: 16 }}>
+          <Text style={{ color: colors.secondaryText, fontSize: 14 }}>Later</Text>
         </Pressable>
       </View>
     </Modal>

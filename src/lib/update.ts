@@ -7,7 +7,7 @@ export interface UpdateInfo {
 
 export async function checkForUpdate(currentVersion: string): Promise<UpdateInfo | null> {
   try {
-    const res = await fetch(UPDATE_URL);
+    const res = await fetch(UPDATE_URL + '?t=' + Date.now());
     if (!res.ok) return null;
     const info: UpdateInfo = await res.json();
     if (info.version !== currentVersion) return info;
@@ -15,4 +15,8 @@ export async function checkForUpdate(currentVersion: string): Promise<UpdateInfo
   } catch {
     return null;
   }
+}
+
+export function getUpdateUrl(): string {
+  return 'https://github.com/domi021/anime-tracker/releases/latest';
 }
